@@ -4,6 +4,7 @@ import { headers } from "next/headers"
 import { NextResponse } from "next/server"
 import Stripe from "stripe"
 
+
 export async function POST(req: Request){
     try{
        const body = await req.text()
@@ -33,36 +34,34 @@ export async function POST(req: Request){
           const shippingAddress = session.shipping_details!.address
 
           await db.order.update({
-            where:{
+            where: {
                 id: orderId,
-
             },
-            data:{
+            data: {
                 isPaid: true,
-                shippingAddress:{
-                    create:{
-                        name: session.customer_details!.name,
+                shippingAddress: {
+                    create: {
+                        name: session.customer_details!.name || "",
                         city: shippingAddress!.city!,
                         country: shippingAddress!.country!,
-                        postalcode:shippingAddress!.postal_code!,
+                        postalCode: shippingAddress!.postal_code!, // Changed here
                         street: shippingAddress!.line1!,
                         state: shippingAddress!.state!,
-
                     },
                 },
-                billingAddress:{
-                    create:{
-                        name: session.customer_details!.name,
+                billingAddress: {
+                    create: {
+                        name: session.customer_details!.name || "",
                         city: billingAddress!.city!,
                         country: billingAddress!.country!,
-                        postalcode:billingAddress!.postal_code!,
+                        postalCode: billingAddress!.postal_code!, // Changed here
                         street: billingAddress!.line1!,
                         state: billingAddress!.state!,
-
                     },
                 },
             }
-          })
+        })
+        
        }
 
        return NextResponse.json({ result: event, ok:true})
